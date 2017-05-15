@@ -16,7 +16,7 @@ class JingWei_LogIn(unittest.TestCase):
         desired_caps={}
         desired_caps['platformName']='Android'
         desired_caps['platformVesion']='6.0'
-        desired_caps['deviceName']='HUAWEI MT7-TL10'
+        desired_caps['deviceName']='PLK-TL01H'
         desired_caps['appPackage']='com.jingwei.card'
         desired_caps['appActivity']='com.jingwei.card.LogoActivity'
         desired_caps['unicodeKeyboard']='True'
@@ -60,32 +60,15 @@ class JingWei_LogIn(unittest.TestCase):
                 else:
                     sheet['G'+str(i+2)].value='false'                  
         except Exception, e:
+            self.wb.find_element_by_id('radio_me').click() #点击‘我’
+            self.wb.find_element_by_id('idManager').click() #点击‘账号管理’
+            self.wb.find_element_by_id('btn_logout').click() #点击‘退出登录’
+            self.wb.find_element_by_id('rightButton').click() #点击toast中的‘确定’
             sheet['F'+str(i+2)].value='登录成功' #判断是否登录成功
             if sheet['E'+str(i+2)].value==sheet['F'+str(i+2)].value:
                 sheet['G'+str(i+2)].value='pass'
             else:
-                sheet['G'+str(i+2)].value='false'            
-            
-
-    ##创建测试用例表
-    #def create_case_form(self):
-        #work=Workbook() #创建excel的对象
-        #ws=work.active #创建一个工作对象的sheet
-        #ws.title='login_test_data'#自定义sheet名称
-        #ws['A1']='用例编号'
-        #ws['B1']='用例描述'
-        #ws['C1']='账号'
-        #ws['D1']='密码'
-        #ws['E1']='预期结果'
-        #ws['F1']='实际结果'
-        #ws['G1']='测试结果'
-        #work.save('login_test_data.xlsx')
-        #return work,ws
-    ##创建测试数据
-    #def create_case_data(self):
-        #data=self.create_case_form()
-        #data.ws['A2']='001'
-        #data.
+                sheet['G'+str(i+2)].value='false'               
         
     #获取测试数据
     def get_data(self):
@@ -134,7 +117,7 @@ class JingWei_LogIn(unittest.TestCase):
                 if re.match(r'1(3|5|7|8)\d\d{8}',account):
                     sql_mobile='select mobile from account_mobile where mobile=%s'%account
                     if self.sql(sql_mobile)==1:  #判断手机是否注册
-                        el=self.wb.find_element_by_id('passwordET') #定位到密码输入框                
+                        el=self.wb.find_element_by_id('passwordET') #定位到密码输入框      
                         el.send_keys(password) # 输入密码
                         #el.reset()
                         #self.clear(el) #调用清空密码方法
@@ -143,9 +126,11 @@ class JingWei_LogIn(unittest.TestCase):
                         if self.sql(sql_passwd_mobile)==1:
                             self.if_login(sheet, i) #调用判断是否登录成功的方法
                         else:
-                            self.password_if_correct(sheet,i) #调用判密码不正确的方法                   
+                            self.password_if_correct(sheet,i) #调用判密码不正确的方法 
+                            self.wb.find_element_by_id('clearPwd').click() #清空密码输入框
                     else:
-                        self.account_if_login(account,sheet,i)  #账号未注册                     
+                        self.account_if_login(account,sheet,i)  #账号未注册
+                        
     
                 #判断输入是否为邮箱
                 elif re.match(r'\d+@\w+.com',account):
@@ -158,7 +143,8 @@ class JingWei_LogIn(unittest.TestCase):
                         if self.sql(sql_passwd_email) == 1: #判断对应的密码是否正确
                             self.if_login(sheet, i) #调用判断是否登录成功的方法                          
                         else:
-                            self.password_if_correct(sheet,i) #调用判断密码是否正确的方法                            
+                            self.password_if_correct(sheet,i) #调用判断密码是否正确的方法 
+                            self.wb.find_element_by_id('clearPwd').click() #清空密码输入框
                     else:
                         self.account_if_login(account,sheet,i) #账号未注册                      
                 else:
@@ -172,14 +158,14 @@ class JingWei_LogIn(unittest.TestCase):
         self.lwb.save('result.xlsx')
     
     #登录页面-先试试
-    def test_xianshishi(self):
-        self.wb.find_element_by_id('rightTextView').click()
-        self.wb.find_element_by_id('leftButton').click()
-        try:
-            if self.wb.find_element_by_id('radio_home').is_displayed(): #判断页面是否显示‘名片夹’按钮
-                print '先试试页面跳转成功'
-        except Exception,e:
-            print '先试试页面跳转失败'
+    #def test_xianshishi(self):
+        #self.wb.find_element_by_id('rightTextView').click()
+        #self.wb.find_element_by_id('leftButton').click()
+        #try:
+            #if self.wb.find_element_by_id('radio_home').is_displayed(): #判断页面是否显示‘名片夹’按钮
+                #print '先试试页面跳转成功'
+        #except Exception,e:
+            #print '先试试页面跳转失败'
 
     
                 
@@ -191,3 +177,6 @@ class JingWei_LogIn(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+#adb shell pm list packages -3 显示app应用的package名
